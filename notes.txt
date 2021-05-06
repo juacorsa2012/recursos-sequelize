@@ -1,0 +1,5 @@
+yarn sequelize db:create
+yarn sequelize db:drop
+npx sequelize migration:generate --name create-table-temas
+npx sequelize db:migrate   
+npx sequelize db:migrate:undo:all
