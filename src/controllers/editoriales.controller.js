@@ -9,15 +9,14 @@ const Ok = require('../utils/ok')
 
 exports.obtenerEditoriales = asyncHandler (async (req, res) => {              
     let sort = req.query.sort || '+nombre'
+    let page = req.query.page || 1
     let direction = sort[0] == '+' ? 'ASC' : 'DESC'
     sort = sort.replace('-','').replace('+', '')             
-
-    const limit  = parseInt(req.query.limit)  || Constant.LIMIT_EDITORIALES
-    const offset = parseInt(req.query.offset) || Constant.OFFSET_EDITORIALES    
+    let offset = (Constant.LIMIT_EDITORIALES * page) - Constant.LIMIT_EDITORIALES
     
     const editoriales = await Editorial.findAll({
         order: sequelize.literal(`${sort} ${direction}`),
-        limit,
+        limit: Constant.LIMIT_EDITORIALES,
         offset        
     })           
     

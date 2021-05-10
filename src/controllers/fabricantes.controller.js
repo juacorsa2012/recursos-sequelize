@@ -9,15 +9,14 @@ const Ok = require('../utils/ok')
 
 exports.obtenerFabricantes = asyncHandler (async (req, res) => {              
     let sort = req.query.sort || '+nombre'
+    let page = req.query.page || 1
     let direction = sort[0] == '+' ? 'ASC' : 'DESC'
     sort = sort.replace('-','').replace('+', '')             
-
-    const limit  = parseInt(req.query.limit)  || Constant.LIMIT_FABRICANTES
-    const offset = parseInt(req.query.offset) || Constant.OFFSET_FABRICANTES
+    let offset = (Constant.LIMIT_FABRICANTES * page) - Constant.LIMIT_FABRICANTES
     
     const fabricantes = await Fabricante.findAll({
         order: sequelize.literal(`${sort} ${direction}`),
-        limit,
+        limit: Constant.LIMIT_FABRICANTES,
         offset        
     })               
 

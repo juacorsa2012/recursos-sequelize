@@ -9,17 +9,15 @@ const Ok = require('../utils/ok')
 
 exports.obtenerIdiomas = asyncHandler (async (req, res) => {                  
     let sort = req.query.sort || '+nombre'   
+    let page = req.query.page || 1
     let direction = sort[0] === '+' ? 'ASC' : 'DESC'
-    sort = sort.replace('+', '').replace('-', '')
-    
-    const limit  = parseInt(req.query.limit)  || Constant.LIMIT_IDIOMAS
-    const offset = parseInt(req.query.offset) || Constant.OFFSET_IDIOMAS       
-    
+    let offset = (Constant.LIMIT_IDIOMAS * page) - Constant.LIMIT_IDIOMAS
+    sort = sort.replace('+', '').replace('-', '')       
     
     const idiomas = await Idioma.findAll({
         order: sequelize.literal(`${sort} ${direction}`),
-        limit,
-        offset        
+        limit: Constant.LIMIT_IDIOMAS,
+        offset                
     })           
     
     Ok(res, StatusCodes.OK, null, idiomas)

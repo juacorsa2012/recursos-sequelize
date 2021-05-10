@@ -15,13 +15,12 @@ const db = new Sequelize(dbConfig)
 
 exports.obtenerTutoriales = asyncHandler (async (req, res) => {    
     const sort = req.query.sort
+    const page = req.query.page || 1
     let publicado = req.query.publicado
     let duracion  = req.query.duracion
     const tema    = req.query.tema
     const idioma  = req.query.idioma
-    const fabricante = req.query.fabricante
-    const limit  = req.query.limit || Constant.LIMIT_TUTORIALES
-    const offset = req.query.offset || Constant.OFFSET_TUTORIALES  
+    const fabricante = req.query.fabricante    
     
     let sql = 'SELECT tutoriales.*, temas.nombre as tema, idiomas.nombre as idioma, fabricantes.nombre as fabricante FROM tutoriales '
     sql = sql + 'JOIN temas ON tutoriales.tema_id = temas.id '
@@ -75,7 +74,9 @@ exports.obtenerTutoriales = asyncHandler (async (req, res) => {
         sql = sql + ` ORDER BY ${orderby} ${direction}`
     }  
    
-    //sql = sql + ` LIMIT ${offset}, ${limit} `
+    let offset = (Constant.LIMIT_TUTORIALES * page) - Constant.LIMIT_TUTORIALES
+    
+    sql = sql + ` LIMIT ${Constant.LIMIT_TUTORIALES} OFFSET ${offset} `
         
     const tutoriales = await db.query(sql, { type: QueryTypes.SELECT })
     

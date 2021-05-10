@@ -14,15 +14,14 @@ const dbConfig  = require('../config/database')
 const db = new Sequelize(dbConfig)
 
 exports.obtenerLibros = async (req, res) => {    
-    const sort = req.query.sort
     let publicado = req.query.publicado
-    let paginas   = req.query.paginas
+    let paginas = req.query.paginas
+    const sort = req.query.sort
+    const page = req.query.page || 1  
     const tema    = req.query.tema
     const idioma  = req.query.idioma
-    const editorial = req.query.editorial
-    const limit  = req.query.limit || Constant.LIMIT_LIBROS
-    const offset = req.query.offset || Constant.OFFSET_LIBROS    
-    
+    const editorial = req.query.editorial    
+        
     let sql = 'SELECT libros.*, temas.nombre as tema, idiomas.nombre as idioma, editoriales.nombre as editorial FROM libros '
     sql = sql + 'JOIN temas ON libros.tema_id = temas.id '
     sql = sql + 'JOIN idiomas ON libros.idioma_id = idiomas.id '
@@ -75,7 +74,9 @@ exports.obtenerLibros = async (req, res) => {
         sql = sql + ` ORDER BY ${orderby} ${direction}`
     }  
    
-    //sql = sql + ` LIMIT ${offset}, ${limit} `
+    let offset = (Constant.LIMIT_LIBROS * page) - Constant.LIMIT_LIBROS
+    
+    sql = sql + ` LIMIT ${Constant.LIMIT_LIBROS} OFFSET ${offset} `
         
     const libros = await db.query(sql, { type: QueryTypes.SELECT })
     

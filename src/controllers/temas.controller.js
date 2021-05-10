@@ -9,16 +9,15 @@ const Ok = require('../utils/ok')
 
 exports.obtenerTemas = asyncHandler (async (req, res) => {                  
     let sort = req.query.sort || '+nombre'
-    let direction = sort[0] == '+' ? 'ASC' : 'DESC'
+    let page = req.query.page || 1
+    let direction = sort[0] == '+' ? 'ASC' : 'DESC'       
+    let offset = (Constant.LIMIT_TEMAS * page) - Constant.LIMIT_TEMAS
     sort = sort.replace('-','').replace('+', '')             
-
-    const limit  = parseInt(req.query.limit)  || Constant.LIMIT_TEMAS
-    const offset = parseInt(req.query.offset) || Constant.OFFSET_TEMAS           
-        
+    
     const temas = await Tema.findAll({
         order: sequelize.literal(`${sort} ${direction}`),
-        //limit,
-        //offset        
+        limit: Constant.LIMIT_TEMAS,
+        offset        
     })              
 
     Ok(res, StatusCodes.OK, null, temas)
